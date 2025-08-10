@@ -11,15 +11,45 @@ There are 4 different services:
 
 ## Item Service:
 
-The item service provides item related information including unit price, item name, item picture
-urls, UPC (universal product code), item id.
+**Database: MongoDB**
 
-Item Service stores everything about an item, we usually call such data as metadata, Use **MongoDB** to realize it as it’s difficult to finalize a schema for such data.
+**Base API URL:**  `../api/items`
 
-Item service is also responsible for inventory lookup and update, by returning remaining
-available units of a product.
+The Item Service manages all item-related information, including:
+
+* Unit price
+
+* Item name
+
+* Product images (URLs)
+
+* UPC (Universal Product Code)
+
+* Item ID
+
+* Inventory Availabilty
+
+It stores comprehensive metadata about each item. Since the metadata structure can vary, MongoDB is used for its flexibility in handling dynamic schemas.
+
+In addition to item details, the service handles inventory lookup and updates, allowing clients to check the remaining available units of a product.
+
+Endpoints
+* GET `/api/items` – Retrieve all items
+
+* GET `/api/items/{id}` – Retrieve item details by ID
+
+* POST `/api/items` – Create a new item in MongoDB
+
+* GET `/api/items/{id}/availability ` – Check available stock for an item
+
+* PUT `/api/items/{id}` – Update an existing item by ID
+
+* DELETE `/api/items/{id}` – Delete an item by ID
+
 
 ## Order Service:
+
+**Database: Cassandra**
 
 The order service supports both synchronous and asynchronous communications, it produces
 Kafka messages and also consumes kafka messages.
@@ -47,6 +77,9 @@ Please note that above APIs provide a synchronous approach, order service should
 order information to some other services...
 
 ## Payment Service:
+
+**Database: MySQL(transaction integrity)**
+
 integrates with order service, provides REST APIs, and publish payment transaction
 results to consumers.
 * Submit Payment
@@ -56,10 +89,10 @@ results to consumers.
 Idempotency should be guaranteed throughout the payment flow, as we don't want to
 double-charge customers or double-refund them.
 
-**MySQL** for (transaction integrity)
 
 ## Account Service:
 
+**Database: MySQL(transaction integrity)**
 * Create Account
 * Update Account
 * Account Lookup
@@ -73,5 +106,3 @@ Users should be able to create/update their account with following necessary inf
 * Shipping Address
 * Billing Address
 * Payment Method
-
-Using **MySQL**

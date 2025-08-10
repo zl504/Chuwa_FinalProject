@@ -1,0 +1,28 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: API_Gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: ITEM-SERVICE
+          uri:
+            lb://ITEM-SERVICE
+          predicates:
+            - Path=/api/items/**
+
+#        - id: VACCINATION-CENTER
+#          uri:
+#            lb://VACCINATION-CENTER
+#          predicates:
+#            - Path=/vaccinationcenter/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
