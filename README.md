@@ -9,6 +9,25 @@ There are 4 different services:
 * Account Service
 
 
+
+
+User flow
+1. using account (register & login)
+2. Order item by order service
+3. call items service by order and get the item info(availiability)
+
+    a. create order
+
+    b. update order
+
+    c. cancel order
+    
+4. pay the items by payment service
+
+
+
+
+
 ## Item Service:
 
 **Database: MongoDB**
@@ -88,6 +107,37 @@ results to consumers.
 * Payment Lookup: lookup a payment, return its status
 Idempotency should be guaranteed throughout the payment flow, as we don't want to
 double-charge customers or double-refund them.
+
+
+1. Order Service
+
+* You create the order first → it stores the item, price, quantity, user info.
+
+* Status starts as PENDING_PAYMENT.
+
+* Inventory may be reserved here so the item is held for the user.
+
+2. Payment Service
+
+* You call it with that orderId and payment info.
+
+* If payment successful:
+
+    * Payment Service marks payment record SUCCESS.
+
+    * Publishes a PaymentSucceeded event (Kafka).
+
+    * Order Service listens for that event → updates order to PAID or COMPLETED (depending on your naming).
+
+* If payment fails:
+
+    * Payment Service marks payment record FAILED.
+
+    * Publishes a PaymentFailed event.
+
+    * Order Service sets order status to PAYMENT_FAILED (or leaves it PENDING_PAYMENT if you want retries).
+
+
 
 
 ## Account Service:
