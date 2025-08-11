@@ -143,6 +143,7 @@ double-charge customers or double-refund them.
 ## Account Service:
 
 **Database: MySQL(transaction integrity)**
+
 * Create Account
 * Update Account
 * Account Lookup
@@ -156,3 +157,24 @@ Users should be able to create/update their account with following necessary inf
 * Shipping Address
 * Billing Address
 * Payment Method
+
+**Base API URL:**  `../auth`
+
+The Item Service manages all item-related information, including: (temp)
+
+* id
+
+* username
+
+* password
+
+
+This service manages user accounts, including registration, login, and account detail retrieval.
+
+Endpoints
+* POST `/auth/register` – Create a new account and store it in MySQL.
+
+* POST `/auth/login` – Log in to the account and receive a JWT token.
+
+* GET `/auth/me` – Retrieve details of the currently authenticated account (requires valid JWT).
+

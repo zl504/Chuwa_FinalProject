@@ -14,11 +14,11 @@ spring:
           predicates:
             - Path=/api/items/**
 
-#        - id: VACCINATION-CENTER
-#          uri:
-#            lb://VACCINATION-CENTER
-#          predicates:
-#            - Path=/vaccinationcenter/**
+        - id: ACCOUNT-SERVICE
+          uri:
+            lb://ACCOUNT-SERVICE
+          predicates:
+            - Path=/auth/**
 
 eureka:
   client:

@@ -9,12 +9,14 @@
         <module name="EurekaServer" />
         <module name="ItemService" />
         <module name="API_Gateway" />
+        <module name="AccountService" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="API_Gateway" options="-parameters" />
+      <module name="AccountService" options="-parameters" />
       <module name="EurekaServer" options="-parameters" />
       <module name="ItemService" options="-parameters" />
     </option>
