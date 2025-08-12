@@ -44,6 +44,13 @@ public class AuthController {
         if (auth == null) return ResponseEntity.status(401).build();
         var user = userRepo.findByUsername(auth.getName()).orElse(null);
         if (user == null) return ResponseEntity.status(404).build();
-        return ResponseEntity.ok(new UserResponse(user.getId(), user.getUsername()));
+        return ResponseEntity.ok(new UserResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getUsername(),
+                user.getShippingAddress(),
+                user.getBillingAddress(),
+                user.getPaymentMethod()
+        ));
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -30,13 +31,25 @@ public class AuthServiceImpl implements AuthService {
         this.jwtService = jwtService;
     }
 
+
     @Override
+    @Transactional
     public void register(RegisterRequest req) {
         if (userRepo.existsByUsername(req.getUsername())) {
-            throw new IllegalArgumentException("Username already exists");
+            throw new IllegalArgumentException("Username already taken");
         }
-        String hash = encoder.encode(req.getPassword());
-        userRepo.save(new User(req.getUsername(), hash));
+        if (userRepo.existsByEmail(req.getEmail())) {
+            throw new IllegalArgumentException("Email already used");
+        }
+
+        User u = new User();
+        u.setEmail(req.getEmail());
+        u.setUsername(req.getUsername());
+        u.setPasswordHash(encoder.encode(req.getPassword()));
+        u.setShippingAddress(req.getShippingAddress());
+        u.setBillingAddress(req.getBillingAddress());
+        u.setPaymentMethod(req.getPaymentMethod());
+        userRepo.save(u);
     }
 
     @Override
