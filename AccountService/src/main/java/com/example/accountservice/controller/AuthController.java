@@ -17,15 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
-    private final UserRepository userRepo;
+
 
 //
 //    @GetMapping("/ping")
 //    public String ping() { return "pong"; }
 
-    public AuthController(AuthService authService, UserRepository userRepo) {
+    public AuthController(AuthService authService) {
         this.authService = authService;
-        this.userRepo = userRepo;
     }
 
     @PostMapping("/register")
@@ -39,18 +38,5 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(req));
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<UserResponse> me(Authentication auth) {
-        if (auth == null) return ResponseEntity.status(401).build();
-        var user = userRepo.findByUsername(auth.getName()).orElse(null);
-        if (user == null) return ResponseEntity.status(404).build();
-        return ResponseEntity.ok(new UserResponse(
-                user.getId(),
-                user.getEmail(),
-                user.getUsername(),
-                user.getShippingAddress(),
-                user.getBillingAddress(),
-                user.getPaymentMethod()
-        ));
-    }
+
 }

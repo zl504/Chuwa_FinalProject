@@ -149,18 +149,9 @@ double-charge customers or double-refund them.
 * Account Lookup
 * ...
 
+This service manages user accounts: registration, login (JWT), profile retrieval, and profile updates (addresses & payment method).
+
 Users should be able to create/update their account with following necessary information:
-
-* User Email
-* User name
-* Password
-* Shipping Address
-* Billing Address
-* Payment Method
-
-**Base API URL:**  `../auth`
-
-The Item Service manages all item-related information, including: 
 
 * id
 
@@ -176,6 +167,10 @@ The Item Service manages all item-related information, including:
 
 * paymentMethod
 
+**Base API URL:**  
+
+* `../auth`– authentication endpoints (public)
+* `../account`– account/profile endpoints (require JWT)
 
 This service manages user accounts, including registration, login, and account detail retrieval.
 
@@ -195,5 +190,6 @@ Endpoints
 
         * Your backend verifies the token’s signature & expiry — no need to recheck the database for credentials.
 
-* GET `/auth/me` – Retrieve details of the currently authenticated account (requires valid JWT).
+* GET `/account/me` – Retrieve details of the currently authenticated account (requires valid JWT).
 
+* PATCH `/account/update` – Update the Account including billing address, shipping address, and payment method.

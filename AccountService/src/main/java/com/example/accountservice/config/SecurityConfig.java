@@ -60,6 +60,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**")
                         .permitAll()
+                        .requestMatchers("/account/**")
+                        .authenticated()
                         .anyRequest()
                         .authenticated());
         // If you use a JWT filter, it must NOT block when there's no token
