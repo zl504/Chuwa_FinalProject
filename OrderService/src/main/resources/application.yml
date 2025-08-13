@@ -1,0 +1,28 @@
+server:
+  port: 9003
+
+spring:
+  application:
+    name: ORDER-SERVICE
+
+  # Cassandra
+  data:
+    cassandra:
+      contact-points: localhost
+      port: 9042
+      local-datacenter: datacenter1
+      keyspace-name: eshop_orders
+      schema-action: create_if_not_exists # create keyspace/tables if possible
+
+  # Kafka
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

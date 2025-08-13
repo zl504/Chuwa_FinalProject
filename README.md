@@ -63,6 +63,10 @@ Endpoints
 
 * PUT `/api/items/{id}` – Update an existing item by ID
 
+* PATCH `/api/items/{id}/availability/increase?qty=` – increase the availability
+
+* PATCH `/api/items/{id}/availability/decrease?qty=` – decrease the availability
+
 * DELETE `/api/items/{id}` – Delete an item by ID
 
 

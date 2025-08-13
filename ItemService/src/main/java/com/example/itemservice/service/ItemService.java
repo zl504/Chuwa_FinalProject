@@ -11,4 +11,6 @@ public interface ItemService {
     Item updateItem(String id, Item updatedItem);
     void deleteItem(String id);
     int getAvailability(String id);
+    boolean decreaseAvailability(String itemId, int amount);
+    void increaseAvailability(String itemId, int amount);
 }

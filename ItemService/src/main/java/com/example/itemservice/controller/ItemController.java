@@ -48,4 +48,17 @@ public class ItemController {
         int availableUnits = itemService.getAvailability(id);
         return ResponseEntity.ok(availableUnits);
     }
+
+    @PatchMapping("/{id}/availability/decrease")
+    public ResponseEntity<Void> dec(@PathVariable String id, @RequestParam int qty) {
+        return itemService.decreaseAvailability(id, qty) ?
+                ResponseEntity.noContent().build() :
+                ResponseEntity.status(409).build();
+    }
+
+    @PatchMapping("/{id}/availability/increase")
+    public ResponseEntity<Void> inc(@PathVariable String id, @RequestParam int qty) {
+        itemService.increaseAvailability(id, qty);
+        return ResponseEntity.noContent().build();
+    }
 }
