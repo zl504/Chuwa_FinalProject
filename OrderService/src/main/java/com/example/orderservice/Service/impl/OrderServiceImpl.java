@@ -16,6 +16,7 @@ import com.example.orderservice.repository.OrderRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,7 +75,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderResponse> listByUser(Long userId) {
-        return repo.findByUserIdOrderByCreatedAtDesc(userId).stream()
+        return repo.findByUserIdAllowFiltering(userId).stream()
+                .sorted(Comparator.comparing(Order::getCreatedAt).reversed())
                 .map(this::toResponse)
                 .toList();
     }

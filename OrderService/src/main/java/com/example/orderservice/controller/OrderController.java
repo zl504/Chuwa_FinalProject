@@ -29,14 +29,13 @@ public class OrderController {
     }
     @PostMapping
     public ResponseEntity<OrderResponse> place(
-
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
             @RequestBody PlaceOrderRequest body) {
 
-        // basic guard
-//        if (auth == null) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
+//         basic guard
+        if (auth == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         // Ask Account service who this token represents
         var me = accountClient.me(auth); // expects 200 with { id, username, ... }

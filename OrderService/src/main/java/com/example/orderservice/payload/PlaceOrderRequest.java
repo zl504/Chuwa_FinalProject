@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlaceOrderRequest {
-    @NotNull
-    private Long userId;
+//    @NotNull
+//    private Long userId;
 
     @NotNull
     @Size(min = 1, message = "At least one line item is required")
@@ -20,17 +20,8 @@ public class PlaceOrderRequest {
     public PlaceOrderRequest() {
     }
 
-    public PlaceOrderRequest(Long userId, List<Line> items) {
-        this.userId = userId;
+    public PlaceOrderRequest(List<Line> items) {
         this.items = items;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 
     public List<Line> getItems() {
