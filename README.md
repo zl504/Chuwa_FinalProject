@@ -63,9 +63,9 @@ Endpoints
 
 * PUT `/api/items/{id}` – Update an existing item by ID
 
-* PATCH `/api/items/{id}/availability/increase?qty=` – increase the availability
+* PUT `/api/items/{id}/availability/increase?qty=` – increase the availability
 
-* PATCH `/api/items/{id}/availability/decrease?qty=` – decrease the availability
+* PUT `/api/items/{id}/availability/decrease?qty=` – decrease the availability
 
 * DELETE `/api/items/{id}` – Delete an item by ID
 
@@ -74,8 +74,9 @@ Endpoints
 
 **Database: Cassandra**
 
-The order service supports both synchronous and asynchronous communications, it produces
-Kafka messages and also consumes kafka messages.
+**Messaging: Kafka (Producer & Consumer)**
+
+The Order Service handles the creation, updating, cancellation, and retrieval of orders. It supports both synchronous RESTful API calls and asynchronous messaging through Kafka, enabling integration with other services.
 
 Order Flow:
 * Create Order (right after user clicks the submit button, an order will be created)
@@ -98,6 +99,21 @@ order information.
 
 Please note that above APIs provide a synchronous approach, order service should publish
 order information to some other services...
+
+**Base API URL:**  `../api/orders`
+
+This service manages Order including create order, cancel order, see the order details by user id.
+
+Endpoints
+
+* POST `/api/orders` – Create a new order and store it in Cassandra.
+
+* GET `/api/orders/{id}` - Retrieve order details by order ID
+
+* GET `/api/orders/by-user/{userId}` – Retrieve all orders for a given user
+* POST `/api/orders/{id}/cancel` – Cancel an order.
+
+
 
 ## Payment Service:
 
