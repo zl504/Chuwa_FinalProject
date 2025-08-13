@@ -1,4 +1,4 @@
-package com.example.orderservice.config;
+package com.example.orderservice.client;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -20,6 +20,6 @@ public class ItemClient {
 
     public void decreaseAvailability(String itemId, int qty) {
         String url = "http://localhost:8083/api/items/" + itemId + "/availability/decrease?qty=" + qty;
-        rt.patchForObject(url, null, Void.class);
+        rt.put(url, null);
     }
 }

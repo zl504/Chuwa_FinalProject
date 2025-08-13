@@ -3,6 +3,7 @@ package com.example.orderservice.domain;
 import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -10,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+
+
+@Table("orders")
 public class Order {
     @PrimaryKey
     private UUID id;
@@ -24,7 +28,7 @@ public class Order {
     @Column("created_at")
     private Instant createdAt = Instant.now();
 
-    @CassandraType(type = CassandraType.Name.LIST, typeArguments = CassandraType.Name.UDT, userTypeName = "order_line_udt")
+    @CassandraType(type = CassandraType.Name.LIST, typeArguments = CassandraType.Name.UDT, userTypeName = "order_line")
     private List<OrderLineUdt> lines = new ArrayList<>();
 
     public void addLine(OrderLineUdt l) {

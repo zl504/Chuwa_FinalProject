@@ -6,14 +6,15 @@ spring:
     name: ORDER-SERVICE
 
   # Cassandra
-  data:
-    cassandra:
-      contact-points: localhost
-      port: 9042
-      local-datacenter: datacenter1
-      keyspace-name: eshop_orders
-      schema-action: create_if_not_exists # create keyspace/tables if possible
+  # Driver / connection properties (Boot 3.x)
+  cassandra:
+    contact-points: localhost
+    port: 9042
+    local-datacenter: datacenter1
+    schema-action: create_if_not_exists
+    keyspace-name: eshop_orders
 
+  # Spring Data Cassandra properties
   # Kafka
   kafka:
     bootstrap-servers: localhost:9092

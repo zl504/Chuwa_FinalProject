@@ -1,62 +1,54 @@
 package com.example.orderservice.domain;
 
-
-import org.springframework.data.cassandra.core.mapping.UserDefinedType;
-
 import java.math.BigDecimal;
 
-@UserDefinedType("order_line_udt")
+import org.springframework.data.cassandra.core.mapping.UserDefinedType;
+import org.springframework.data.cassandra.core.mapping.CassandraType;
+import org.springframework.data.cassandra.core.mapping.CassandraType.Name;
+import org.springframework.data.cassandra.core.mapping.*;
+
+@UserDefinedType("order_line")
 public class OrderLineUdt {
+
+    @Column("item_id")
     private String itemId;
+
+    @Column("item_name")
     private String itemName;
+
+    @Column("unit_price")
+    @CassandraType(type = Name.DECIMAL)
     private BigDecimal unitPrice;
+
+    @Column("quantity")
     private int quantity;
-    private BigDecimal lineTotal;
 
-    public static OrderLineUdt of(String id, String name, BigDecimal price, int qty) {
-        OrderLineUdt l = new OrderLineUdt();
-        l.itemId = id; l.itemName = name; l.unitPrice = price; l.quantity = qty;
-        l.lineTotal = price.multiply(BigDecimal.valueOf(qty));
-        return l;
+    public OrderLineUdt() {}
+
+    public static OrderLineUdt of(String itemId, String itemName, BigDecimal unitPrice, int qty) {
+        OrderLineUdt udt = new OrderLineUdt();
+        udt.itemId = itemId;
+        udt.itemName = itemName;
+        udt.unitPrice = unitPrice;
+        udt.quantity = qty;
+        return udt;
     }
 
-    public String getItemId() {
-        return itemId;
-    }
+    // getters/setters …
+    public String getItemId() { return itemId; }
+    public void setItemId(String itemId) { this.itemId = itemId; }
 
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
-    }
+    public String getItemName() { return itemName; }
+    public void setItemName(String itemName) { this.itemName = itemName; }
 
-    public String getItemName() {
-        return itemName;
-    }
+    public BigDecimal getUnitPrice() { return unitPrice; }
+    public void setUnitPrice(BigDecimal unitPrice) { this.unitPrice = unitPrice; }
 
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
-    }
-
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
-    }
-
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
 
     public BigDecimal getLineTotal() {
-        return lineTotal;
-    }
-
-    public void setLineTotal(BigDecimal lineTotal) {
-        this.lineTotal = lineTotal;
+        return unitPrice == null ? BigDecimal.ZERO
+                : unitPrice.multiply(BigDecimal.valueOf(quantity));
     }
 }
