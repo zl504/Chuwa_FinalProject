@@ -213,3 +213,19 @@ Endpoints
 * GET `/account/me` – Retrieve details of the currently authenticated account (requires valid JWT).
 
 * PATCH `/account/update` – Update the Account including billing address, shipping address, and payment method.
+
+
+
+
+FLOW:
+Order Service places an order → sends OrderPlacedEvent to Kafka topic (e.g., "order.placed").
+
+Payment Service consumes that event, tries to process the payment.
+
+Payment Service then produces a PaymentSucceeded or PaymentFailed event to another Kafka topic (e.g., "payments.events").
+
+Order Service listens (@KafkaListener) to "payments.events":
+
+    If PaymentSucceeded → mark order as paid in Cassandra.
+
+    If PaymentFailed → mark order as cancelled and compensate stock by calling itemClient.increaseAvailability(...).
