@@ -9,7 +9,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +33,8 @@ public class OrderController {
 
 //         basic guard
         if (auth == null) {
+            System.out.println("No Auth");
+
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -59,8 +60,14 @@ public class OrderController {
 
     @PostMapping("/{id}/cancel")
     public ResponseEntity<Void> cancel(@PathVariable UUID id) {
-        orderService.cancel(id);
-        return ResponseEntity.noContent().build();
+        try {
+            boolean changed = orderService.cancel(id);
+            return changed
+                    ? ResponseEntity.noContent().build()               // first time: 204
+                    : ResponseEntity.status(HttpStatus.CONFLICT).build(); // next times: 409
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build(); // unknown id: 404
+        }
     }
 
 }

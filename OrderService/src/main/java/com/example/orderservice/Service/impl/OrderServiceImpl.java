@@ -83,13 +83,22 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void cancel(UUID id) {
-        var order = repo.findById(id).orElseThrow();
-        if (!OrderStatus.CANCELLED.name().equals(order.getStatus())) {
-            order.setStatus(OrderStatus.CANCELLED.name());
-            repo.save(order);
-            // (Optional) publish OrderCancelled and compensate inventory by increasing availability
+    public boolean cancel(UUID id) {
+        var order = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+        // already cancelled? no-op
+        if (OrderStatus.CANCELLED.name().equals(order.getStatus())) {
+            return false; // <-- tell controller no change
         }
+
+        // compensate inventory exactly once
+        order.getLines().forEach(line ->
+                items.increaseAvailability(line.getItemId(), line.getQuantity())
+        );
+
+        order.setStatus(OrderStatus.CANCELLED.name());
+        repo.save(order);
+        return true; // state changed
     }
 
 

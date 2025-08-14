@@ -22,4 +22,9 @@ public class ItemClient {
         String url = "http://localhost:8083/api/items/" + itemId + "/availability/decrease?qty=" + qty;
         rt.put(url, null);
     }
+
+    public void increaseAvailability(String itemId, int qty) {
+        String url = "http://localhost:8083/api/items/" + itemId + "/availability/increase?qty=" + qty;
+        rt.put(url, null); // PUT with no body, qty in query param
+    }
 }

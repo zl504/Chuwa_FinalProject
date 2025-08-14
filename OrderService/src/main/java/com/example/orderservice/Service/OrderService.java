@@ -28,6 +28,6 @@ public interface OrderService {
     /**
      * Cancel an order (idempotent).
      */
-    void cancel(UUID id);
+    boolean cancel(UUID id);
 
 }
