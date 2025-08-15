@@ -12,7 +12,7 @@ public class PaymentEventProducer {
         this.kafka = kafka;
     }
 
-    public void publishPaymentResult(PaymentCompletedEvent evt) {
+    public void publishPaymentResult(PaymentResultEvent evt) {
         kafka.send(KafkaTopics.PAYMENT_RESULT, evt.getOrderId().toString(), evt);
     }
 }

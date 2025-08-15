@@ -25,10 +25,12 @@ public class PaymentController {
     // Optional manual trigger
     @PostMapping("/charge")
     public ResponseEntity<Payment> charge(@RequestBody ChargeRequest req) {
+
+
         var p = payments.charge(req.orderId, req.userId, req.amount);
         return ResponseEntity.ok(p);
     }
-
+    
     @GetMapping("/order/{orderId}")
     public List<Payment> byOrder(@PathVariable UUID orderId) {
         return payments.byOrder(orderId);

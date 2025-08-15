@@ -33,15 +33,28 @@ public class KafkaConfig {
     // Consumer for PaymentResultEvent
     @Bean
     public ConsumerFactory<String, PaymentResultEvent> paymentResultConsumerFactory() {
-        JsonDeserializer<PaymentResultEvent> jd = new JsonDeserializer<>(PaymentResultEvent.class);
-        jd.addTrustedPackages("*");
-        return new DefaultKafkaConsumerFactory<>(
-                Map.of(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092",
-                        ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
-                        ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class,
-                        ConsumerConfig.GROUP_ID_CONFIG, "order-service"),
-                new StringDeserializer(),
-                jd
+        // Delegate JSON deserializer bound to your local DTO
+        var json = new org.springframework.kafka.support.serializer.JsonDeserializer<>(
+                com.example.orderservice.event.PaymentResultEvent.class
+        );
+        json.addTrustedPackages("*");
+        // IMPORTANT: ignore any type headers on the record
+        json.setUseTypeHeaders(false);         // don't honor __TypeId__
+        // (optional) strip headers so they don't leak forward
+        json.setRemoveTypeHeaders(true);
+
+        // Wrap the JSON deserializer so DefaultErrorHandler can handle SerializationException
+        var errorHandling = new org.springframework.kafka.support.serializer.ErrorHandlingDeserializer<>(json);
+
+        return new org.springframework.kafka.core.DefaultKafkaConsumerFactory<>(
+                Map.of(
+                        org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092",
+                        org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringDeserializer.class,
+                        org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, org.springframework.kafka.support.serializer.ErrorHandlingDeserializer.class,
+                        org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG, "order-service"
+                ),
+                new org.apache.kafka.common.serialization.StringDeserializer(),
+                errorHandling
         );
     }
 

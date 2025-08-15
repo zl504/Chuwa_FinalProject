@@ -2,16 +2,15 @@ package com.example.paymentservice.service.impl;
 
 import com.example.paymentservice.domain.Payment;
 import com.example.paymentservice.domain.PaymentStatus;
-import com.example.paymentservice.event.PaymentCompletedEvent;
+import com.example.paymentservice.event.PaymentResultEvent;
 import com.example.paymentservice.event.PaymentEventProducer;
+import com.example.paymentservice.exception.DuplicatePaymentException;
 import com.example.paymentservice.repository.PaymentRepo;
 import com.example.paymentservice.service.PaymentService;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -31,12 +30,20 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public Payment charge(UUID orderId, Long userId, BigDecimal amount) {
-        var p = new Payment();
-        p.setOrderId(orderId);
-        p.setUserId(userId);
-        p.setAmount(amount);
-        p.setStatus(PaymentStatus.PENDING);
-        p = repo.save(p);
+        var check = repo.findForUpdateByOrderId(orderId);
+
+        Payment p = check.orElseGet(() -> {
+            Payment payment = new Payment();
+            payment.setOrderId(orderId);
+            payment.setUserId(userId);
+            payment.setAmount(amount);
+            payment.setStatus(PaymentStatus.PENDING);
+            return repo.save(payment);
+        });
+
+
+        // If already successful, return the existing one (idempotent)
+        if (p.getStatus() == PaymentStatus.SUCCESS) throw new DuplicatePaymentException(p);
 
         // Simulate gateway call (80% success)
         boolean ok = random.nextDouble() < 0.8;
@@ -45,7 +52,7 @@ public class PaymentServiceImpl implements PaymentService {
         p = repo.save(p);
 
         // Emit event
-        var evt = new PaymentCompletedEvent(
+        var evt = new PaymentResultEvent(
                 p.getId(),
                 p.getOrderId(), p.getUserId(),
                 p.getStatus().name()

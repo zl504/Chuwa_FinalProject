@@ -19,18 +19,21 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
-      group-id: payment-service-v2
+      group-id: order-service
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
         spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
         spring.json.trusted.packages: "*"   # or your package list
-        spring.json.value.default.type: com.example.paymentservice.event.OrderPlacedEvent
+        spring.json.value.default.type: com.example.orderservice.event.OrderPlacedEvent
+        spring.json.use.type.headers: false
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.add.type.headers: false   # <— don't send type headers
+        spring.json.type.mapping: >
+          com.example.paymentservice.event.PaymentResultEvent:com.example.orderservice.event.PaymentResultEvent
 management:
   endpoints:
     web:

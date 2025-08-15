@@ -1,20 +1,23 @@
 package com.example.paymentservice.event;
 
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.UUID;
 
-public class PaymentCompletedEvent {
+public class PaymentResultEvent {
     public UUID paymentId;
     public UUID orderId;
     public Long userId;
     public String status; // "SUCCESS" or "FAILED"
 //    public Instant occurredAt;
 
-    public PaymentCompletedEvent() { }
-    public PaymentCompletedEvent(UUID paymentId,
-                                 UUID orderId, Long userId,
-                                 String status) {
+    public enum PaymentStatus {
+        SUCCESS,
+        FAILED
+    }
+
+    public PaymentResultEvent() { }
+    public PaymentResultEvent(UUID paymentId,
+                              UUID orderId, Long userId,
+                              String status) {
         this.paymentId = paymentId;
         this.orderId = orderId;
         this.userId = userId;

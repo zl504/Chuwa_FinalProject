@@ -7,7 +7,9 @@ import java.util.UUID;
 
 
 @Entity
-@Table(name = "payments")
+@Table(name = "payments", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_payments_order", columnNames = "order_id")
+})
 public class Payment {
 
     @Id
