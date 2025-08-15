@@ -71,7 +71,7 @@ public class ItemServiceImpl implements ItemService {
      */
     @Override
     public boolean decreaseAvailability(String id, int qty) {
-        if (qty <= 0) return true; // nothing to do
+        if (qty <= 0) throw new IllegalArgumentException("qty must be positive");
         Query q = new Query(Criteria.where("_id").is(id).and("available").gte(qty));
         Update u = new Update().inc("available", -qty);
         UpdateResult res = mongoTemplate.update(Item.class).matching(q).apply(u).first();
@@ -83,10 +83,11 @@ public class ItemServiceImpl implements ItemService {
      */
     @Override
     public void increaseAvailability(String id, int qty) {
-        if (qty <= 0) return;
+        if (qty <= 0) throw new IllegalArgumentException("qty must be positive");
         Query q = new Query(Criteria.where("_id").is(id));
         Update u = new Update().inc("available", qty);
         mongoTemplate.update(Item.class).matching(q).apply(u).first();
     }
+
 
 }

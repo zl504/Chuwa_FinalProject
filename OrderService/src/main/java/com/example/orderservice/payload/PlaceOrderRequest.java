@@ -64,5 +64,6 @@ public class PlaceOrderRequest {
         public void setQuantity(int quantity) {
             this.quantity = quantity;
         }
+
     }
 }

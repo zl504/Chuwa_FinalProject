@@ -1,29 +1,35 @@
-# Chuwa_FinalProject
-Final Project is about e-commerce.
+# E-commerce Microservices
 
-There are 4 different services:
+This project demonstrates an e-commerce system built with a microservices architecture.
+It includes four main services:
 
-* Item Service (including inventory service)
+* Item Service (with Inventory)
+
 * Order Service
+
 * Payment Service
+
 * Account Service
 
 
 
 
 User flow
-1. using account (register & login)
-2. Order item by order service
-3. call items service by order and get the item info(availiability)
+1. Account Service – Register and log in (JWT authentication).
 
-    a. create order
+2. Order Service – Place an order for items.
 
-    b. update order
+3. Item Service – Retrieve item details (availability, price, etc.).
 
-    c. cancel order
-    
-4. pay the items by payment service
+    * Create Order
 
+    * Update Order
+
+    * Cancel Order
+
+4. Payment Service – Process payment for the order.
+
+    * Ensures idempotency (no duplicate payments1. ).
 
 
 
@@ -33,6 +39,8 @@ User flow
 **Database: MongoDB**
 
 **Base API URL:**  `../api/items`
+
+The Item Service manages product data and inventory. It supports flexible schemas using MongoDB.
 
 The Item Service manages all item-related information, including:
 
@@ -59,15 +67,17 @@ Endpoints
 
 * POST `/api/items` – Create a new item in MongoDB
 
-* GET `/api/items/{id}/availability ` – Check available stock for an item
+* DELETE `/api/items/{id}` – Delete an item by ID
 
 * PUT `/api/items/{id}` – Update an existing item by ID
+
+Inventory Endpoints
+
+* GET `/api/items/{id}/availability ` – Check available stock for an item
 
 * PUT `/api/items/{id}/availability/increase?qty=` – increase the availability
 
 * PUT `/api/items/{id}/availability/decrease?qty=` – decrease the availability
-
-* DELETE `/api/items/{id}` – Delete an item by ID
 
 
 ## Order Service:
@@ -131,15 +141,13 @@ double-charge customers or double-refund them.
 
 1. Order Service
 
-* You create the order first → it stores the item, price, quantity, user info.
+* Creates order with status PENDING_PAYMENT.
 
-* Status starts as PENDING_PAYMENT.
-
-* Inventory may be reserved here so the item is held for the user.
+* May reserve inventory.
 
 2. Payment Service
 
-* You call it with that orderId and payment info.
+* Accepts payment request for an order.
 
 * If payment successful:
 
@@ -147,7 +155,7 @@ double-charge customers or double-refund them.
 
     * Publishes a PaymentSucceeded event (Kafka).
 
-    * Order Service listens for that event → updates order to PAID or COMPLETED (depending on your naming).
+    * Order Service listens for that event → updates order to PAID or COMPLETED .
 
 * If payment fails:
 
@@ -155,7 +163,7 @@ double-charge customers or double-refund them.
 
     * Publishes a PaymentFailed event.
 
-    * Order Service sets order status to PAYMENT_FAILED (or leaves it PENDING_PAYMENT if you want retries).
+    * Order Service sets order status to PAYMENT_FAILED.
 
 
 
@@ -217,15 +225,16 @@ Endpoints
 
 
 
-FLOW:
-Order Service places an order → sends OrderPlacedEvent to Kafka topic (e.g., "order.placed").
+Event Flow (Kafka Integration)
 
-Payment Service consumes that event, tries to process the payment.
+1. Order Service places an order → publishes OrderPlacedEvent (order.placed).
 
-Payment Service then produces a PaymentSucceeded or PaymentFailed event to another Kafka topic (e.g., "payments.events").
+2. Payment Service consumes the event → processes payment.
 
-Order Service listens (@KafkaListener) to "payments.events":
+3. Payment Service publishes PaymentSucceeded or PaymentFailed (payments.events).
 
-    If PaymentSucceeded → mark order as paid in Cassandra.
+4. Order Service consumes payments.events:
 
-    If PaymentFailed → mark order as cancelled and compensate stock by calling itemClient.increaseAvailability(...).
+    * If success → mark order as PAID in Cassandra.
+
+    * If failure → mark order as CANCELLED and restore inventory (itemClient.increaseAvailability(...)).
